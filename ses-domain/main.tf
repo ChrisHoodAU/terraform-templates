@@ -12,26 +12,27 @@ terraform {
 
 # Setting the AWS region we want to use
 provider "aws" {
-  profile = "stax-stax-au1-versent-innovation"
+  profile = "stax-stax-au1-versent-innovation2"
+  # profile = var.profile
   region  = "ap-southeast-2"
 }
 
 # SES Domain Identity
 resource "aws_ses_domain_identity" "workday" {
-    for_each = var.identities
-  domain = each.value["domain"]
+  for_each = var.identities
+  domain   = each.value["domain"]
 }
 
 # SES domain MAIL FROM
 resource "aws_ses_domain_mail_from" "workday" {
-    for_each = var.identities
+  for_each         = var.identities
   domain           = each.value["domain"]
   mail_from_domain = "mail.${each.value["domain"]}"
 }
 
 resource "aws_ses_domain_dkim" "workday" {
   for_each = var.identities
-  domain = each.value["domain"]
+  domain   = each.value["domain"]
 }
 
 resource "aws_iam_user" "smtpuser" {
@@ -47,38 +48,29 @@ resource "aws_iam_access_key" "smtpuser" {
 
 resource "aws_iam_user_policy" "smtpuser_ses" {
   name = "AllowSESSending"
-  user = aws_iam_user.smtpuser.name
-
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AuthoriseVersent",
-            "Effect": "Allow",
-            "Resource": "test.versentpoc.com",
-            "Action": [
-                "ses:SendEmail",
-                "ses:SendRawEmail"
-            ]
-        },
-                {
-            "Sid": "AuthoriseSatx",
-            "Effect": "Allow",
-            "Resource": "staxtest.versentpoc.com",
-            "Action": [
-                "ses:SendEmail",
-                "ses:SendRawEmail"
-            ]
-        }
-    ]
+  user =  aws_iam_user.smtpuser.name
+  policy = data.aws_iam_policy_document.smtp_policy.json
 }
-EOF
+
+data "aws_iam_policy_document" "smtp_policy" {
+
+  dynamic "statement" {
+    for_each = aws_ses_domain_identity.workday
+    content {
+      # sid = "Authorise ${statement.value["domain"]}"
+
+      actions = [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ]
+      resources = [statement.value.arn]
+    }
+  }
 }
 
 # output "testversentpoc_dkim" {
 #   for_each = var.identities
-#   value = aws_ses_domain_dkim.testversentpoc.dkim_tokens
+#   value = ["$aws_ses_domain_dkim.workday.*.dkim_tokens"]
 # }
 
 # output "testversentpoc_domainver" {

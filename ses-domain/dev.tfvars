@@ -1,14 +1,9 @@
-variable "identities" {
-    description = "Map of Domains to configuration"
-    type = Map
-    default = {
-        versent = {
-            domain = "test.versentpoc.com"
-            environment = "dev"
-        },
-        stax = {
-            domain = "staxtest.versentpoc.com"
-            environment = "dev"
-        }
+identities = {
+  versent = {
+    domain = "dev.versentpoc.com"
+    },
+  stax = {
+    domain = "staxdev.versentpoc.com"
     }
 }
+profile = "stax-stax-au1-versent-innovation1"
