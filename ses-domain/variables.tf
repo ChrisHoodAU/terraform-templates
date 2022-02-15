@@ -22,5 +22,5 @@ variable "smtpuser" {
 # The AWS profile to use
 variable "profile" {
   type    = string
-  default = "stax-stax-au1-versent-innovation2"
+  default = "versent-innovation-2"
 }
