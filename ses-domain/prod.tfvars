@@ -1,9 +1,9 @@
 identities = {
-  versent = {
-    domain = "workday.versent.com.au"
+  id1 = {
+    domain = "subdomain.domain.com.au"
   },
-  stax = {
-    domain = "workday.stax.io"
+  id2 = {
+    domain = "subdomain.domain2.com.au"
   }
 }
-profile = "stax-stax-au1-versent-innovationmain"
+profile = "aws-profile"

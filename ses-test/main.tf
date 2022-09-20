@@ -13,37 +13,37 @@ terraform {
 variable "awsvars" {
   type = map(string)
   default = {
-    domain   = "test.versentpoc.com"
-    username = "workday-smtp-user"
+    domain   = "test.domain.com"
+    username = "smtp-user"
   }
 }
 
 # Setting the AWS region we want to use
 provider "aws" {
-  profile = "stax-stax-au1-versent-innovation"
+  profile = "aws-profile"
   region  = "ap-southeast-2"
 }
 
 # SES Domain Identity
-resource "aws_ses_domain_identity" "testversentpoc" {
+resource "aws_ses_domain_identity" "testdomain" {
   domain = lookup(var.awsvars, "domain")
 }
 
 # SES domain MAIL FROM
-resource "aws_ses_domain_mail_from" "testversentpoc" {
-  domain           = aws_ses_domain_identity.testversentpoc.domain
-  mail_from_domain = "mail.${aws_ses_domain_identity.testversentpoc.domain}"
+resource "aws_ses_domain_mail_from" "testdomain" {
+  domain           = aws_ses_domain_identity.testdomain.domain
+  mail_from_domain = "mail.${aws_ses_domain_identity.testdomain.domain}"
 }
 
-resource "aws_ses_domain_dkim" "testversentpoc" {
-  domain = aws_ses_domain_identity.testversentpoc.domain
+resource "aws_ses_domain_dkim" "testdomain" {
+  domain = aws_ses_domain_identity.testdomain.domain
 }
 
 resource "aws_iam_user" "smtpuser" {
   name = lookup(var.awsvars, "username")
 
   tags = {
-    Description = "SES SMTP User for workday integration"
+    Description = "SES SMTP User"
   }
 }
 
@@ -62,7 +62,7 @@ resource "aws_iam_user_policy" "smtpuser_ses" {
         {
             "Sid": "AuthoriseVersent",
             "Effect": "Allow",
-            "Resource": "${aws_ses_domain_identity.testversentpoc.arn}",
+            "Resource": "${aws_ses_domain_identity.testdomain.arn}",
             "Action": [
                 "ses:SendEmail",
                 "ses:SendRawEmail"
@@ -73,30 +73,12 @@ resource "aws_iam_user_policy" "smtpuser_ses" {
 EOF
 }
 
-# data "aws_iam_policy_document" "testversentpoc" {
-#   statement {
-#     actions   = ["SES:SendEmail", "SES:SendRawEmail"]
-#     resources = [aws_ses_domain_identity.testversentpoc.arn]
-
-#     principals {
-#       identifiers = ["*"]
-#       type        = "AWS"
-#     }
-#   }
-# }
-
-# resource "aws_ses_identity_policy" "example" {
-#   identity = aws_ses_domain_identity.testversentpoc.arn
-#   name     = "example"
-#   policy   = data.aws_iam_policy_document.testversentpoc.json
-# }
-
-output "testversentpoc_dkim" {
-  value = aws_ses_domain_dkim.testversentpoc.dkim_tokens
+output "testdomain_dkim" {
+  value = aws_ses_domain_dkim.testdomain.dkim_tokens
 }
 
-output "testversentpoc_domainver" {
-  value = aws_ses_domain_identity.testversentpoc.verification_token
+output "testdomain_domainver" {
+  value = aws_ses_domain_identity.testdomain.verification_token
 }
 
 output "aws_iam_access_key_id" {

@@ -3,11 +3,11 @@ variable "identities" {
   description = "Map of Domains to configuration"
   type        = map(any)
   default = {
-    versent = {
-      domain = "prod.versentpoc.com"
+    id1 = {
+      domain = "prod.domain.com"
     },
-    stax = {
-      domain = "staxprod.versentpoc.com"
+    id2 = {
+      domain = "prod.domain2.com"
     }
   }
 }
@@ -16,11 +16,11 @@ variable "identities" {
 variable "smtpuser" {
   description = "The name of the IAM user for SMTP"
   type        = string
-  default     = "workday-smtp-user"
+  default     = "smtp-user"
 }
 
 # The AWS profile to use
 variable "profile" {
   type    = string
-  default = "versent-innovation-2"
+  default = "aws-profile"
 }

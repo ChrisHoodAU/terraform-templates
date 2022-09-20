@@ -1,9 +1,9 @@
 identities = {
-  versent = {
-    domain = "dev.versentpoc.com"
+  id1 = {
+    domain = "dev.domain.com"
   },
-  stax = {
-    domain = "staxdev.versentpoc.com"
+  id2 = {
+    domain = "dev.domain2.com"
   }
 }
-profile = "stax-stax-au1-versent-innovation1"
+profile = "aws-profile"
